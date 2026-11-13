@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">AeroDash</string>
+    <string name="cd_aero_emblem">AeroDash crystal cube emblem</string>
+    <string name="cd_level_preview">Level %1$s visual preview</string>
+    <string name="cd_sound_toggle">Toggle sound effects</string>
+    <string name="cd_skin_selector">Choose cube skin</string>
+    <string name="cd_back_to_levels">Back to level select</string>
+    <string name="cd_pause_game">Pause game</string>
+    <string name="cd_place_checkpoint">Place practice checkpoint</string>
+    <string name="level_select_title">SELECT LEVEL</string>
+    <string name="level_select_subtitle">FRUTIGER AERO EDITION</string>
+    <string name="filter_all">All</string>
+    <string name="label_best_progress">BEST</string>
+    <string name="label_orbs">ORBS</string>
+    <string name="label_attempts">ATTEMPTS</string>
+    <string name="label_bpm">%1$d BPM</string>
+    <string name="action_play_level">PLAY</string>
+    <string name="action_practice_mode">Practice</string>
+    <string name="action_retry">RETRY</string>
+    <string name="action_resume">RESUME</string>
+    <string name="action_levels">LEVELS</string>
+    <string name="skin_picker_title">Choose Crystal Cube Skin</string>
+    <string name="game_tap_to_jump">TAP ANYWHERE TO JUMP</string>
+    <string name="game_practice_badge">PRACTICE MODE</string>
+    <string name="game_paused_title">PAUSED</string>
+    <string name="game_crashed_title">CRYSTAL SHATTERED</string>
+    <string name="game_victory_title">LEVEL COMPLETE!</string>
+    <string name="empty_filter_title">No levels in this tier yet</string>
+    <string name="empty_filter_hint">Select All to browse every glossy course.</string>
+</resources>

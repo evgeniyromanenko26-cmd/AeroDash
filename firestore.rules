@@ -1,0 +1,139 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.userId is string &&
+             data.userId == userId &&
+             data.displayName is string &&
+             data.displayName.size() >= 1 &&
+             data.displayName.size() <= 60 &&
+             data.selectedSkinId is string &&
+             data.selectedSkinId.size() >= 1 &&
+             data.selectedSkinId.size() <= 40 &&
+             data.selectedTrailId is string &&
+             data.selectedTrailId.size() >= 1 &&
+             data.selectedTrailId.size() <= 40 &&
+             data.unlockedSkins is list &&
+             data.unlockedSkins.size() >= 1 &&
+             data.unlockedSkins.size() <= 20 &&
+             data.unlockedSkins[0] is string &&
+             data.totalOrbs is int &&
+             data.totalOrbs >= 0 &&
+             data.totalOrbs <= 10000000 &&
+             data.totalAttempts is int &&
+             data.totalAttempts >= 0 &&
+             data.totalAttempts <= 10000000 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidLevelProgress(data, levelId) {
+      return data.levelId is string &&
+             data.levelId == levelId &&
+             data.bestPercent is int &&
+             data.bestPercent >= 0 &&
+             data.bestPercent <= 100 &&
+             data.completed is bool &&
+             data.attempts is int &&
+             data.attempts >= 0 &&
+             data.attempts <= 10000000 &&
+             data.coinsCollected is int &&
+             data.coinsCollected >= 0 &&
+             data.coinsCollected <= 3 &&
+             data.bestTimeMs is int &&
+             data.bestTimeMs >= 0 &&
+             data.bestTimeMs <= 3600000 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'selectedSkinId', 'selectedTrailId',
+                         'unlockedSkins', 'totalOrbs', 'totalAttempts', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'selectedSkinId', 'selectedTrailId',
+                         'unlockedSkins', 'totalOrbs', 'totalAttempts', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'selectedSkinId', 'selectedTrailId',
+                         'unlockedSkins', 'totalOrbs', 'totalAttempts', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /levelProgress/{levelId} {
+        allow get: if isOwner(userId) && isValidId(levelId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(levelId) &&
+                         incoming().keys().hasAll([
+                           'levelId', 'bestPercent', 'completed', 'attempts',
+                           'coinsCollected', 'bestTimeMs', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'levelId', 'bestPercent', 'completed', 'attempts',
+                           'coinsCollected', 'bestTimeMs', 'createdAt', 'updatedAt'
+                         ]) &&
+                         isValidLevelProgress(incoming(), levelId);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(levelId) &&
+                         isValidLevelProgress(incoming(), levelId) &&
+                         incoming().levelId == existing().levelId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'bestPercent', 'completed', 'attempts',
+                           'coinsCollected', 'bestTimeMs', 'updatedAt'
+                         ]);
+
+        allow delete: if isOwner(userId) && isValidId(levelId);
+      }
+    }
+  }
+}

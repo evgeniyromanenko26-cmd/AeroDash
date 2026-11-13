@@ -1,0 +1,6 @@
+{
+  "name": "AeroDash",
+  "description": "Глянцевый платформер-раннер в стиле Frutiger Aero по мотивам Geometry Dash с яркой палитрой и стеклянными эффектами.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

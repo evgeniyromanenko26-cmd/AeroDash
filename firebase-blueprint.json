@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Player profile storing selected AeroDash skin, trail, unlocked skins, and aggregate stats.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Firebase user UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Player display name."
+        },
+        "selectedSkinId": {
+          "type": "string",
+          "description": "Currently equipped cube skin identifier."
+        },
+        "selectedTrailId": {
+          "type": "string",
+          "description": "Currently equipped particle trail identifier."
+        },
+        "unlockedSkins": {
+          "type": "array",
+          "description": "Bounded list of unlocked skin IDs (max 20)."
+        },
+        "totalOrbs": {
+          "type": "integer",
+          "description": "Total Aero Orbs earned for unlocking skins."
+        },
+        "totalAttempts": {
+          "type": "integer",
+          "description": "Total gameplay attempts across all levels."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of profile creation (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last profile update (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "displayName",
+        "selectedSkinId",
+        "selectedTrailId",
+        "unlockedSkins",
+        "totalOrbs",
+        "totalAttempts",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "LevelProgress": {
+      "title": "LevelProgress",
+      "description": "Per-level completion progress, best percentage, coins, and attempts for a user.",
+      "type": "object",
+      "properties": {
+        "levelId": {
+          "type": "string",
+          "description": "Level identifier matching document ID."
+        },
+        "bestPercent": {
+          "type": "integer",
+          "description": "Highest completion percentage reached (0..100)."
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Whether the level has been cleared to 100%."
+        },
+        "attempts": {
+          "type": "integer",
+          "description": "Number of attempts on this level."
+        },
+        "coinsCollected": {
+          "type": "integer",
+          "description": "Maximum Aero Coins collected in a single or best run (0..3)."
+        },
+        "bestTimeMs": {
+          "type": "integer",
+          "description": "Fastest completion time in milliseconds (0 if not yet cleared)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of first recorded attempt (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last progress update (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "levelId",
+        "bestPercent",
+        "completed",
+        "attempts",
+        "coinsCollected",
+        "bestTimeMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Player profile and unlocked Frutiger Aero customization items."
+    },
+    "/users/{userId}/levelProgress/{levelId}": {
+      "schema": { "$ref": "#/entities/LevelProgress" },
+      "description": "Per-level high scores, completion flags, and coin counts for a player."
+    }
+  }
+}
